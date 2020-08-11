@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net45;net461</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.0.1</Version>
+    <Copyright>Julian Tekook 2020</Copyright>
+    <Product>LaravelApi</Product>
+    <Company>Tekook.dev</Company>
+    <Authors>tekook</Authors>
+    <PackageProjectUrl>https://github.com/tekook/LaravelApi.Net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/tekook/LaravelApi.Net.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>restapi, rest, api, dotnet, laravel</PackageTags>
+    <RootNamespace>Tekook.LaravelApi</RootNamespace>
+    <AssemblyName>Tekook.LaravelApi</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </Content>
+    <Content Include="..\README.MD">
+      <Pack>True</Pack>
+      <PackagePath>README.MD</PackagePath>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Flurl" Version="2.8.2" />
+    <PackageReference Include="Flurl.Http" Version="2.4.2" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+  </ItemGroup>
+</Project>
