@@ -10,7 +10,6 @@ namespace Tekook.LaravelApi.Example
 
         public Api()
         {
-            this.BaseUrl = new Uri("https://api.dev.local/api/v1");
             this.ClientIdentifier = "Tekook.LaravelApi.Example";
             this.Users = new CrudEndpoint<User>(this, "users");
         }

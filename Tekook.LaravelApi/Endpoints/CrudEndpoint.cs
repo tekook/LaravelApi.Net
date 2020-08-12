@@ -40,7 +40,7 @@ namespace Tekook.LaravelApi.Endpoints
         /// <returns>Laravel does not provided data on destroy, thus only the normal <see cref="System.Net.Http.HttpResponseMessage"/> is provided.</returns>
         public async Task<System.Net.Http.HttpResponseMessage> Destroy(object pkey)
         {
-            return await this.Api.WrapCall(async () =>
+            return await this.Api.Wrap(async () =>
             {
                 return await this.AuthedRequest()
                 .AppendPathSegment(pkey)
@@ -65,7 +65,7 @@ namespace Tekook.LaravelApi.Endpoints
         /// <returns><see cref="CollectionResponse{T}"/> of the resource.</returns>
         public async Task<CollectionResponse<T>> IndexResponse(object queryParams = null)
         {
-            return await this.Api.WrapCall(async () =>
+            return await this.Api.Wrap(async () =>
             {
                 return await this.AuthedRequest()
                 .SetQueryParams(queryParams)
@@ -111,7 +111,7 @@ namespace Tekook.LaravelApi.Endpoints
         /// <returns></returns>
         public async Task<Response<T>> ShowResponse(object pkey)
         {
-            return await this.Api.WrapCall(async () =>
+            return await this.Api.Wrap(async () =>
             {
                 return await this.AuthedRequest()
                 .AppendPathSegment(pkey)
@@ -137,7 +137,7 @@ namespace Tekook.LaravelApi.Endpoints
         /// <returns>Response of the newly stored resource.</returns>
         public async Task<Response<T>> StoreResponse(T resource)
         {
-            return await this.Api.WrapCall(async () =>
+            return await this.Api.Wrap(async () =>
             {
                 return await this.AuthedRequest()
                 .PostJsonAsync(resource)
@@ -162,7 +162,7 @@ namespace Tekook.LaravelApi.Endpoints
         /// <returns>Response of the updated resource.</returns>
         public async Task<Response<T>> UpdateResponse(T resource)
         {
-            return await this.Api.WrapCall(async () =>
+            return await this.Api.Wrap(async () =>
             {
                 return await this.AuthedRequest()
                 .AppendPathSegment(resource.GetPrimaryKeyValue())
