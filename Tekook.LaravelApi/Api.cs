@@ -1,12 +1,13 @@
 ﻿using Flurl.Http;
 using System;
 using System.Threading.Tasks;
+using Tekook.LaravelApi.Contracts;
 
 namespace Tekook.LaravelApi
 {
     /// <summary>
     /// Base class for all Apis extend and implement constructor for your own endpoints.
-    /// Set <see cref="BaseUrl"/> and <see cref="ClientIdentifier"/> in constructor or elsewhere.
+    /// Make sure to set <see cref="BaseUrl"/> and <see cref="ClientIdentifier"/>.
     /// </summary>
     public class Api
     {
@@ -51,7 +52,7 @@ namespace Tekook.LaravelApi
         /// <summary>
         /// BaseRequest of the Api for all requests.
         /// </summary>
-        public IFlurlRequest BaseRequest() => GetRequest(this.BaseUrl);
+        public IFlurlRequest BaseRequest() => GetRequest(this.BaseUrl ?? throw new ArgumentNullException("BaseUrl", "BaseUrl ist not set, please provide"));
 
         #endregion Properties and construct
 
@@ -93,22 +94,19 @@ namespace Tekook.LaravelApi
         #region Api Methods
 
         /// <summary>
-        /// Tries to invoke a function which should contain an api call.
-        /// If the response is Unauthorized, we will try to get a new AccessToken and retry the function.
+        /// Wrap around API calls to ensure the <see cref="Api"/> instance is injected into <see cref="IApiResponse.Api"/>.
         /// </summary>
-        /// <typeparam name="T">Any Object your <see cref="Func{T, TResult}"/> returns.</typeparam>
-        /// <param name="func">The function which should be invoked.</param>
+        /// <typeparam name="T">Any object your function returns.</typeparam>
+        /// <param name="func">The function which results in the api response</param>
         /// <returns>async task result of your request.</returns>
-        internal async Task<T> WrapCall<T>(Func<Task<T>> func)
+        public async Task<T> Wrap<T>(Func<Task<T>> func)
         {
-            try
+            T result = await func.Invoke();
+            if (result is IApiResponse apiResponse)
             {
-                return await func.Invoke();
+                apiResponse.Api = this;
             }
-            catch (FlurlHttpException)
-            {
-                throw;
-            }
+            return result;
         }
 
         #endregion Api Methods

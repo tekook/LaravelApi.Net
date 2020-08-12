@@ -10,7 +10,7 @@ namespace Tekook.LaravelApi.Example
         {
             Api api = new Api();
             var response = await api.Users.IndexResponse();
-            await response.Chunk(api, async (x) =>
+            await response.Chunk(async (x) =>
             {
                 var users = x.Data;
                 Console.WriteLine($"Count: {users.Count}");
