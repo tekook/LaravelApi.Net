@@ -9,7 +9,7 @@ namespace Tekook.LaravelApi.Endpoints
     /// Default implementation of an Crud-supported-Endpoint
     /// </summary>
     /// <typeparam name="T">Type of the resource this Endpoint uses.</typeparam>
-    public class CrudEndpoint<T> : Endpoint where T : Resources.Resource
+    public class CrudEndpoint<T> : Endpoint where T : Contracts.IIndexedResource
     {
         /// <summary>
         /// Creates a new Endpoint bound to the specified api and resource path.
@@ -30,7 +30,7 @@ namespace Tekook.LaravelApi.Endpoints
         /// <returns>Laravel does not provided data on destroy, thus only the normal <see cref="System.Net.Http.HttpResponseMessage"/> is provided.</returns>
         public async Task<System.Net.Http.HttpResponseMessage> Destroy(T resource)
         {
-            return await this.Destroy(resource.GetPrimaryKeyValue());
+            return await this.Destroy(resource.PrimaryKeyValue);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace Tekook.LaravelApi.Endpoints
         /// <returns>Response of the resource.</returns>
         public async Task<Response<T>> ShowResponse(T resource)
         {
-            return await this.ShowResponse(resource.GetPrimaryKeyValue());
+            return await this.ShowResponse(resource.PrimaryKeyValue);
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace Tekook.LaravelApi.Endpoints
             return await this.Api.Wrap(async () =>
             {
                 return await this.AuthedRequest()
-                .AppendPathSegment(resource.GetPrimaryKeyValue())
+                .AppendPathSegment(resource.PrimaryKeyValue)
                 .PostJsonAsync(resource)
                 .ReceiveJson<Response<T>>();
             });
