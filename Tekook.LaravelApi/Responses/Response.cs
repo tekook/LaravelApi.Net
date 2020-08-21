@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Tekook.LaravelApi.Contracts;
-using Tekook.LaravelApi.Resources;
 
 namespace Tekook.LaravelApi.Responses
 {
@@ -8,7 +7,7 @@ namespace Tekook.LaravelApi.Responses
     /// All responses contain the <see cref="Data"/> attribute.
     /// </summary>
     /// <typeparam name="T">Type of <see cref="Data"/></typeparam>
-    public class Response<T> : IApiResponse where T : Resource
+    public class Response<T> : IHoldsApi where T : IResource
     {
         /// <inheritdoc/>
         public Api Api { get; set; }

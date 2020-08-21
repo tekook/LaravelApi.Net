@@ -16,6 +16,11 @@ namespace Tekook.LaravelApi
         private string accessToken;
 
         /// <summary>
+        /// Header to send which each request via the "Accept" parameter.
+        /// </summary>
+        public string AcceptHeader { get; set; } = "application/json";
+
+        /// <summary>
         /// Access token to bear as authentification for most requests.
         /// </summary>
         public string AccessToken
@@ -36,6 +41,11 @@ namespace Tekook.LaravelApi
         /// Client Identifier of all Api Calls.
         /// </summary>
         public string ClientIdentifier { get; set; }
+
+        /// <summary>
+        /// Header to send with each request via the "Accept-Language" parameter.
+        /// </summary>
+        public string LanguageHeader { get; set; }
 
         /// <summary>
         /// RAsied when the <see cref="AccessToken"/> of the <see cref="Api"/> changes.
@@ -86,7 +96,7 @@ namespace Tekook.LaravelApi
         /// <returns></returns>
         public IFlurlRequest GetRequest(string url)
         {
-            return url.WithHeaders(new { Accept = "application/json", User_Agent = this.ClientIdentifier });
+            return url.WithHeaders(new { Accept = this.AcceptHeader, User_Agent = this.ClientIdentifier, Accept_Language = this.LanguageHeader });
         }
 
         #endregion Methods
@@ -94,7 +104,19 @@ namespace Tekook.LaravelApi
         #region Api Methods
 
         /// <summary>
-        /// Wrap around API calls to ensure the <see cref="Api"/> instance is injected into <see cref="IApiResponse.Api"/>.
+        /// Will be called each time a request was succesfully made to the api.
+        /// </summary>
+        /// <param name="sender">The api which made the request.</param>
+        /// <param name="result">The result returned from the Api.</param>
+        public delegate void ResultReceived(Api sender, object result);
+
+        /// <summary>
+        /// Will be called each time a request was succesfully made to the api.
+        /// </summary>
+        public event ResultReceived OnRequestReceived;
+
+        /// <summary>
+        /// Wrap around API calls to ensure the <see cref="Api"/> instance is injected into <see cref="IHoldsApi.Api"/>.
         /// </summary>
         /// <typeparam name="T">Any object your function returns.</typeparam>
         /// <param name="func">The function which results in the api response</param>
@@ -102,10 +124,11 @@ namespace Tekook.LaravelApi
         public async Task<T> Wrap<T>(Func<Task<T>> func)
         {
             T result = await func.Invoke();
-            if (result is IApiResponse apiResponse)
+            if (result is IHoldsApi apiResponse)
             {
                 apiResponse.Api = this;
             }
+            this.OnRequestReceived?.Invoke(this, result);
             return result;
         }
 

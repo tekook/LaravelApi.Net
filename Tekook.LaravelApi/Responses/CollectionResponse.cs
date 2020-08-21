@@ -11,8 +11,10 @@ namespace Tekook.LaravelApi.Responses
     /// Collection response for multiple items of type T.
     /// </summary>
     /// <typeparam name="T">Type of the resource this collection containes.</typeparam>
-    public class CollectionResponse<T> : IApiResponse where T : Resources.Resource
+    public class CollectionResponse<T> : IHoldsApi where T : IResource
     {
+        #region Properties
+
         /// <inheritdoc/>
         public Api Api { get; set; }
 
@@ -21,6 +23,11 @@ namespace Tekook.LaravelApi.Responses
         /// </summary>
         [JsonProperty("data")]
         public IList<T> Data { get; set; }
+
+        /// <summary>
+        /// Determinates if there is more Data pending.
+        /// </summary>
+        public bool DataPending => this.Links?.Next != null;
 
         /// <summary>
         /// Links provided by laravel-pagination.
@@ -34,12 +41,9 @@ namespace Tekook.LaravelApi.Responses
         [JsonProperty("meta")]
         public MetaResponse Meta { get; set; }
 
-        #region Methods
+        #endregion Properties
 
-        /// <summary>
-        /// Determinates if there is more Data pending.
-        /// </summary>
-        public bool DataPending => this.Links?.Next != null;
+        #region Chunk
 
         /// <summary>
         /// Iterates overall pages of the resource and calls the func with the corresponding <see cref="CollectionResponse{T}"/>.
@@ -90,6 +94,46 @@ namespace Tekook.LaravelApi.Responses
         }
 
         /// <summary>
+        /// Iterates overall pages of the resource and calls the async func with the corresponding <see cref="CollectionResponse{T}"/>.
+        /// </summary>
+        /// <param name="api"><see cref="Api"/> to use for calls.</param>
+        /// <param name="func">Function to call for each chunk.</param>
+        /// <param name="queryParams">Optional query paramters to use for each call.</param>
+        /// <returns></returns>
+        protected async Task ChunkViaApi(Api api, Func<CollectionResponse<T>, Task> func, object queryParams = null)
+        {
+            var collection = this;
+            await func(collection);
+            while (collection.DataPending)
+            {
+                collection = await collection.GetNext(api, queryParams);
+                await func(collection);
+            }
+        }
+
+        /// <summary>
+        /// Iterates overall pages of the resource and calls the async func with the corresponding <see cref="CollectionResponse{T}"/>.
+        /// </summary>
+        /// <param name="api"><see cref="Api"/> to use for calls.</param>
+        /// <param name="func">Function to call for each chunk.</param>
+        /// <param name="queryParams">Optional query paramters to use for each call.</param>
+        /// <returns></returns>
+        protected async Task ChunkViaApi(Api api, Action<CollectionResponse<T>> func, object queryParams = null)
+        {
+            var collection = this;
+            func(collection);
+            while (collection.DataPending)
+            {
+                collection = await collection.GetNext(api, queryParams);
+                func(collection);
+            }
+        }
+
+        #endregion Chunk
+
+        #region FetchAll
+
+        /// <summary>
         /// Fetches all pending data from the api and integrated it in the current collection.
         /// Use with caution, this could take forever!
         /// </summary>
@@ -126,41 +170,9 @@ namespace Tekook.LaravelApi.Responses
             return await this.FetchAll(this.Api, queryParams);
         }
 
-        /// <summary>
-        /// Iterates overall pages of the resource and calls the async func with the corresponding <see cref="CollectionResponse{T}"/>.
-        /// </summary>
-        /// <param name="api"><see cref="Api"/> to use for calls.</param>
-        /// <param name="func">Function to call for each chunk.</param>
-        /// <param name="queryParams">Optional query paramters to use for each call.</param>
-        /// <returns></returns>
-        protected async Task ChunkViaApi(Api api, Func<CollectionResponse<T>, Task> func, object queryParams = null)
-        {
-            var collection = this;
-            await func(collection);
-            while (collection.DataPending)
-            {
-                collection = await collection.GetNext(api, queryParams);
-                await func(collection);
-            }
-        }
+        #endregion FetchAll
 
-        /// <summary>
-        /// Iterates overall pages of the resource and calls the async func with the corresponding <see cref="CollectionResponse{T}"/>.
-        /// </summary>
-        /// <param name="api"><see cref="Api"/> to use for calls.</param>
-        /// <param name="func">Function to call for each chunk.</param>
-        /// <param name="queryParams">Optional query paramters to use for each call.</param>
-        /// <returns></returns>
-        protected async Task ChunkViaApi(Api api, Action<CollectionResponse<T>> func, object queryParams = null)
-        {
-            var collection = this;
-            func(collection);
-            while (collection.DataPending)
-            {
-                collection = await collection.GetNext(api, queryParams);
-                func(collection);
-            }
-        }
+        #region Methods
 
         /// <summary>
         /// Gets the next page of the resource.
