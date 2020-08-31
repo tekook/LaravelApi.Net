@@ -1,15 +1,14 @@
 ﻿using Flurl.Http;
+using Tekook.LaravelApi.Contracts;
 
 namespace Tekook.LaravelApi.Endpoints
 {
     /// <summary>
     /// Base class for all endpoints.
     /// </summary>
-    public abstract class Endpoint
+    public abstract class Endpoint : IHoldsApi
     {
-        /// <summary>
-        /// The <see cref="LaravelApi.Api"/> this endpoint belongs to.
-        /// </summary>
+        /// <inheritdoc/>
         public Api Api { get; set; }
 
         /// <summary>

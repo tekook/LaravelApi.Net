@@ -8,38 +8,31 @@ using Tekook.LaravelApi.Contracts;
 namespace Tekook.LaravelApi.Responses
 {
     /// <summary>
-    /// Collection response for multiple items of type T.
+    /// Default implementation of <see cref="ICollectionResponse{T}"/> with the default json properties set statically.
+    /// Provides multiple methods for working with the results.
     /// </summary>
     /// <typeparam name="T">Type of the resource this collection containes.</typeparam>
-    public class CollectionResponse<T> : IHoldsApi where T : IResource
+    public class CollectionResponse<T> : IHoldsApi, ICollectionResponse<T> where T : IResource
     {
         #region Properties
 
         /// <inheritdoc/>
         public Api Api { get; set; }
 
-        /// <summary>
-        /// The data of the collection containing the resources.
-        /// </summary>
+        /// <inheritdoc/>
         [JsonProperty("data")]
         public IList<T> Data { get; set; }
 
-        /// <summary>
-        /// Determinates if there is more Data pending.
-        /// </summary>
+        /// <inheritdoc/>
         public bool DataPending => this.Links?.Next != null;
 
-        /// <summary>
-        /// Links provided by laravel-pagination.
-        /// </summary>
+        /// <inheritdoc/>
         [JsonProperty("links")]
-        public LinksResponse Links { get; set; }
+        public ILinksResponse Links { get; set; } = new LinksResponse();
 
-        /// <summary>
-        /// Meta provied by laravel-pagination.
-        /// </summary>
+        /// <inheritdoc/>
         [JsonProperty("meta")]
-        public MetaResponse Meta { get; set; }
+        public IMetaResponse Meta { get; set; } = new MetaResponse();
 
         #endregion Properties
 
