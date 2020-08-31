@@ -1,52 +1,39 @@
 ﻿using Newtonsoft.Json;
 using System;
+using Tekook.LaravelApi.Contracts;
 
 namespace Tekook.LaravelApi.Responses
 {
     /// <summary>
-    /// Meta response provided by laravel pagination.
+    /// Default implementation of <see cref="IMetaResponse"/> with default json parameters set statically.
     /// </summary>
-    public class MetaResponse
+    public class MetaResponse : IMetaResponse
     {
-        /// <summary>
-        /// Current page we are on.
-        /// </summary>
+        /// <inheritdoc/>
         [JsonProperty("current_page")]
         public long CurrentPage { get; set; }
 
-        /// <summary>
-        /// Defines the number of items this collection is starting from.
-        /// </summary>
+        /// <inheritdoc/>
         [JsonProperty("from")]
         public long? From { get; set; }
 
-        /// <summary>
-        /// Last page for this collection.
-        /// </summary>
+        /// <inheritdoc/>
         [JsonProperty("last_page")]
         public long LastPage { get; set; }
 
-        /// <summary>
-        /// Path of the request.
-        /// </summary>
+        /// <inheritdoc/>
         [JsonProperty("path")]
         public Uri Path { get; set; }
 
-        /// <summary>
-        /// How many items per page.
-        /// </summary>
+        /// <inheritdoc/>
         [JsonProperty("per_page")]
         public long PerPage { get; set; }
 
-        /// <summary>
-        /// Defines the number of items this collection goes to.
-        /// </summary>
+        /// <inheritdoc/>
         [JsonProperty("to")]
         public long? To { get; set; }
 
-        /// <summary>
-        /// Total number of items in this collection.
-        /// </summary>
+        /// <inheritdoc/>
         [JsonProperty("total")]
         public long Total { get; set; }
     }

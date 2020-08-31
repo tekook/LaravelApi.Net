@@ -5,6 +5,9 @@ namespace Tekook.LaravelApi.Example.Resources
 {
     public class User : Resource
     {
+        [JsonProperty("email")]
+        public string Email { get; set; }
+
         [JsonProperty("firstname")]
         public string Firstname { get; set; }
 

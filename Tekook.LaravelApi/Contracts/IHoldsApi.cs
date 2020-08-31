@@ -6,7 +6,7 @@
     public interface IHoldsApi
     {
         /// <summary>
-        /// The <see cref="LaravelApi.Api"/> which created this object.
+        /// The <see cref="LaravelApi.Api"/> which this object belongs to.
         /// </summary>
         Api Api { get; set; }
     }

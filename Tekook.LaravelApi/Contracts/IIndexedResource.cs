@@ -1,4 +1,6 @@
-﻿namespace Tekook.LaravelApi.Contracts
+﻿using Newtonsoft.Json;
+
+namespace Tekook.LaravelApi.Contracts
 {
     /// <summary>
     /// Describes a resource which is indexed via an primary key (e.g id) via <see cref="PrimaryKeyValue"/>.
@@ -8,6 +10,7 @@
         /// <summary>
         /// The Value of the primary key for this model (e.g. the id)
         /// </summary>
+        [JsonIgnore]
         object PrimaryKeyValue { get; }
     }
 }

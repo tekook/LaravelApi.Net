@@ -2,6 +2,8 @@
 using System;
 using System.Threading.Tasks;
 using Tekook.LaravelApi.Contracts;
+using Tekook.LaravelApi.Exceptions;
+using Tekook.LaravelApi.Responses;
 
 namespace Tekook.LaravelApi
 {
@@ -121,15 +123,39 @@ namespace Tekook.LaravelApi
         /// <typeparam name="T">Any object your function returns.</typeparam>
         /// <param name="func">The function which results in the api response</param>
         /// <returns>async task result of your request.</returns>
+        /// <exception cref="ApiException">Generic Exception thrown if the error is not identified.</exception>
+        /// <exception cref="ApiTimeoutException">Thrown when the request timed out.</exception>
+        /// <exception cref="ApiServerException">Thrown when the laravel api returned an readable error.</exception>
+        /// <exception cref="ApiInvalidRequestException">Thrown when laravel returned status-code 422, stating an invalid request.</exception>
         public async Task<T> Wrap<T>(Func<Task<T>> func)
         {
-            T result = await func.Invoke();
-            if (result is IHoldsApi apiResponse)
+            try
             {
-                apiResponse.Api = this;
+                T result = await func.Invoke();
+                if (result is IHoldsApi apiResponse)
+                {
+                    apiResponse.Api = this;
+                }
+                this.OnRequestReceived?.Invoke(this, result);
+                return result;
             }
-            this.OnRequestReceived?.Invoke(this, result);
-            return result;
+            catch (FlurlHttpTimeoutException e)
+            {
+                throw new ApiTimeoutException(e.Message, e);
+            }
+            catch (FlurlHttpException e)
+            {
+                ErrorResponse error = await ErrorResponse.FromException(e);
+                if (error != null)
+                {
+                    if ((int)error.StatusCode == 422)
+                    {
+                        throw new ApiInvalidRequestException(error);
+                    }
+                    throw new ApiServerException(error);
+                }
+                throw new ApiException(e.Message, e);
+            }
         }
 
         #endregion Api Methods

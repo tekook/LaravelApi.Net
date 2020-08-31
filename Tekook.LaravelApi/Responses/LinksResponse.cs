@@ -1,34 +1,27 @@
 ﻿using Newtonsoft.Json;
 using System;
+using Tekook.LaravelApi.Contracts;
 
 namespace Tekook.LaravelApi.Responses
 {
     /// <summary>
-    /// Links response provided by laravel pagination.
+    /// Default implementation of <see cref="ILinksResponse"/> with the default json properties set statically.
     /// </summary>
-    public class LinksResponse
+    public class LinksResponse : ILinksResponse
     {
-        /// <summary>
-        /// Link to the first page of the collection.
-        /// </summary>
+        /// <inheritdoc/>
         [JsonProperty("first")]
         public Uri First { get; set; }
 
-        /// <summary>
-        /// Link to the last page of the collection.
-        /// </summary>
+        /// <inheritdoc/>
         [JsonProperty("last")]
         public Uri Last { get; set; }
 
-        /// <summary>
-        /// Link to the next page of the collection.
-        /// </summary>
+        /// <inheritdoc/>
         [JsonProperty("next")]
         public Uri Next { get; set; }
 
-        /// <summary>
-        /// Link to the previous page of the collection.
-        /// </summary>
+        /// <inheritdoc/>
         [JsonProperty("prev")]
         public Uri Prev { get; set; }
     }
